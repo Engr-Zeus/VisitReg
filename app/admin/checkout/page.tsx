@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminCheckoutPage() {
   const rows = await prisma.visitor.findMany({
-    where: { checkOutAt: null },
+    where: { checkOutAt: null, status: "APPROVED" },
     orderBy: { checkInAt: "desc" },
   });
 
@@ -19,7 +19,7 @@ export default async function AdminCheckoutPage() {
       <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Checkout</h1>
       <p className="mt-2 text-base leading-relaxed text-slate-600 dark:text-slate-400">
         Choose who is leaving, then confirm. You can also check people out from{" "}
-        <Link href="/admin/active" className="font-semibold text-teal-700 underline dark:text-teal-400">
+        <Link href="/admin/requests" className="font-semibold text-teal-700 underline dark:text-teal-400">
           On-site
         </Link>
         .

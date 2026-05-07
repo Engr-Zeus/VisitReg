@@ -18,8 +18,23 @@ model Visitor {
   hostEmail    String
   purpose      String
   notes        String    @default("")
+
+
+  status       String    @default("PENDING") 
+  waitTime     Int?
+  rescheduleDate   DateTime?
+
   checkInAt    DateTime
   checkOutAt   DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+}
+
+
+model Admin {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  department String?
 }

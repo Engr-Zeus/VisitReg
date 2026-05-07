@@ -34,3 +34,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# --- CRITICAL SECURITY ---
+.env
+.env.example
+
+
+out/
+build/
+
+prisma/dev.db
+prisma/*.db-journal
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+
+.gitignore

@@ -20,6 +20,10 @@ export function AdminNav() {
   const active = pathname.startsWith("/admin/active");
   const checkout = pathname.startsWith("/admin/checkout");
   const logs = pathname.startsWith("/admin/logs");
+  const requests = pathname.startsWith("/admin/requests");
+
+  // hosts
+  const hosts = pathname.startsWith("/admin/hosts");
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/95 shadow-sm backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95 print:hidden">
@@ -45,15 +49,16 @@ export function AdminNav() {
           <Link href="/admin" className={navClass(dashboard)}>
             Home
           </Link>
-          <Link href="/admin/active" className={navClass(active)}>
-            On-site
-          </Link>
+          <Link href="/admin/requests" className={navClass(requests)}>Requests</Link>
+          {/* <Link href="/admin/active" className={navClass(active)}>On-site</Link> */}
           <Link href="/admin/checkout" className={navClass(checkout)}>
             Checkout
           </Link>
           <Link href="/admin/logs" className={navClass(logs)}>
             Logs
           </Link>
+          <Link href="/admin/hosts" className={navClass(hosts)}>Hosts</Link>
+          
         </nav>
       </div>
     </header>

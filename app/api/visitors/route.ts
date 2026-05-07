@@ -76,10 +76,12 @@ export async function POST(request: Request) {
       purpose,
       notes,
       checkInAt,
+      status: "PENDING",
     },
   });
 
   const mail = await notifyHostOfCheckIn({
+    visitorId: visitor.id,
     hostEmail,
     visitorName: `${firstName} ${surname}`,
     organization,
@@ -96,4 +98,27 @@ export async function POST(request: Request) {
     hostNotifySkipped: !process.env.SMTP_HOST?.trim(),
     hostNotifyError: mail.error,
   });
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const { visitorId, status, waitTime, rescheduleDate } = await req.json();
+
+    const updatedVisitor = await prisma.visitor.update({
+      where: { id: visitorId },
+      data: { 
+        status, 
+        waitTime: waitTime ? parseInt(waitTime.toString()) : null,
+        // Convert the string from the frontend into a Date object
+        rescheduleDate: (status === "RESCHEDULED" && rescheduleDate) 
+          ? new Date(rescheduleDate) 
+          : null
+      },
+    });
+
+    return NextResponse.json(updatedVisitor);
+  } catch (error: any) {
+    console.error("PATCH error:", error);
+    return NextResponse.json({ error: "Update failed" }, { status: 500 });
+  }
 }

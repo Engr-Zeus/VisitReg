@@ -1,7 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { HostEmailEnvStatus } from "@/lib/site-config";
+
+// Interface for the admin data coming from the API[cite: 10]
+interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+}
 
 const label = "mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300";
 const field =
@@ -10,6 +17,27 @@ const field =
 export function CheckInForm({ hostEmailStatus }: { hostEmailStatus: HostEmailEnvStatus }) {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+
+  // States for dynamic host lookup[cite: 4]
+  const [admins, setAdmins] = useState<AdminUser[]>([]);
+  const [hostName, setHostName] = useState("");
+  const [selectedHostEmail, setSelectedHostEmail] = useState("");
+
+  // Fetch the live list of hosts from the API on mount[cite: 4]
+  useEffect(() => {
+    async function loadHosts() {
+      try {
+        const res = await fetch("/api/admins");
+        if (res.ok) {
+          const data = await res.json();
+          setAdmins(data);
+        }
+      } catch (err) {
+        console.error("Failed to load hosts:", err);
+      }
+    }
+    loadHosts();
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -67,7 +95,11 @@ export function CheckInForm({ hostEmailStatus }: { hostEmailStatus: HostEmailEnv
         type: "ok",
         text: `Checked in at ${checkIn}.${extra}`,
       });
+      
+      // Reset form states[cite: 4, 13]
       form.reset();
+      setHostName("");
+      setSelectedHostEmail("");
     } catch {
       setMessage({ type: "err", text: "Network error — try again." });
     } finally {
@@ -81,33 +113,23 @@ export function CheckInForm({ hostEmailStatus }: { hostEmailStatus: HostEmailEnv
         <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Your details</h2>
         <div className="mt-4 flex flex-col gap-4">
           <div>
-            <label className={label} htmlFor="firstName">
-              First name
-            </label>
+            <label className={label} htmlFor="firstName">First name</label>
             <input id="firstName" name="firstName" className={field} required autoComplete="given-name" />
           </div>
           <div>
-            <label className={label} htmlFor="surname">
-              Surname
-            </label>
+            <label className={label} htmlFor="surname">Surname</label>
             <input id="surname" name="surname" className={field} required autoComplete="family-name" />
           </div>
           <div>
-            <label className={label} htmlFor="phone">
-              Phone number
-            </label>
+            <label className={label} htmlFor="phone">Phone number</label>
             <input id="phone" name="phone" type="tel" inputMode="tel" className={field} required autoComplete="tel" />
           </div>
           <div>
-            <label className={label} htmlFor="email">
-              Email address
-            </label>
+            <label className={label} htmlFor="email">Email address</label>
             <input id="email" name="email" type="email" inputMode="email" className={field} required autoComplete="email" />
           </div>
           <div>
-            <label className={label} htmlFor="organization">
-              Organization
-            </label>
+            <label className={label} htmlFor="organization">Organization</label>
             <input id="organization" name="organization" className={field} required />
           </div>
         </div>
@@ -117,21 +139,49 @@ export function CheckInForm({ hostEmailStatus }: { hostEmailStatus: HostEmailEnv
         <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">Visit</h2>
         <div className="mt-4 flex flex-col gap-4">
           <div>
-            <label className={label} htmlFor="hostName">
-              Host / person to visit
-            </label>
-            <input id="hostName" name="hostName" className={field} required />
+            <label className={label} htmlFor="hostName">Host / person to visit</label>
+            <input
+              id="hostName"
+              name="hostName"
+              list="admin-suggestions"
+              className={field}
+              placeholder="Type to search for a host..."
+              required
+              value={hostName}
+              onChange={(e) => {
+                const value = e.target.value;
+                setHostName(value);
+
+                // Find match in the database list[cite: 10]
+                const admin = admins.find(
+                  (a) => a.name.toLowerCase() === value.trim().toLowerCase()
+                );
+                setSelectedHostEmail(admin ? admin.email : "");
+              }}
+            />
+            <datalist id="admin-suggestions">
+              {admins.map((admin) => (
+                <option key={admin.id} value={admin.name} />
+              ))}
+            </datalist>
           </div>
+
           <div>
-            <label className={label} htmlFor="hostEmail">
-              Host email
-            </label>
-            <input id="hostEmail" name="hostEmail" type="email" inputMode="email" className={field} required />
+            <label className={label} htmlFor="hostEmail">Host email</label>
+            <input
+              id="hostEmail"
+              name="hostEmail"
+              type="email"
+              className={`${field} bg-slate-100 dark:bg-slate-900 cursor-not-allowed`}
+              value={selectedHostEmail}
+              readOnly 
+              required
+              placeholder="Host email will appear here"
+            />
           </div>
+
           <div>
-            <label className={label} htmlFor="purpose">
-              Purpose
-            </label>
+            <label className={label} htmlFor="purpose">Purpose</label>
             <textarea id="purpose" name="purpose" className={`${field} min-h-[6.5rem] resize-y`} rows={4} required />
           </div>
           <div>
@@ -148,7 +198,7 @@ export function CheckInForm({ hostEmailStatus }: { hostEmailStatus: HostEmailEnv
         {hostEmailStatus === "ready" ? " Your host may receive an email at the address above." : null}
       </p>
 
-      {message ? (
+      {message && (
         <div
           role="status"
           className={
@@ -159,7 +209,7 @@ export function CheckInForm({ hostEmailStatus }: { hostEmailStatus: HostEmailEnv
         >
           {message.text}
         </div>
-      ) : null}
+      )}
 
       <button
         type="submit"
