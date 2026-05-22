@@ -117,7 +117,7 @@ export async function PATCH(req: Request) {
     });
 
     return NextResponse.json(updatedVisitor);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("PATCH error:", error);
     return NextResponse.json({ error: "Update failed" }, { status: 500 });
   }

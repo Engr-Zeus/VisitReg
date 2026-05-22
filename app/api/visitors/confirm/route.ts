@@ -21,7 +21,7 @@ export async function PATCH(req: Request) {
     });
 
     return NextResponse.json({ success: true, visitor: updatedVisitor });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Confirmation API Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

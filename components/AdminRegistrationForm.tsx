@@ -38,7 +38,7 @@ export function AdminRegistrationForm() {
 
         setMessage({ type: "ok", text: "Host registered successfully!" });
         (e.target as HTMLFormElement).reset();
-    } catch (err: any) {
+    } catch (err: unknown) {
         // Log the actual error to the browser console (F12)
         console.error("Registration Error:", err);
         setMessage({ type: "err", text: err.message });

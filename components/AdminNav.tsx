@@ -17,7 +17,7 @@ export function AdminNav() {
   const pathname = usePathname() || "";
 
   const dashboard = pathname === "/admin" || pathname === "/admin/";
-  const active = pathname.startsWith("/admin/active");
+  const _active = pathname.startsWith("/admin/active");
   const checkout = pathname.startsWith("/admin/checkout");
   const logs = pathname.startsWith("/admin/logs");
   const requests = pathname.startsWith("/admin/requests");

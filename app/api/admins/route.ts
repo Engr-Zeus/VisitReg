@@ -8,7 +8,7 @@ export async function GET() {
       orderBy: { name: "asc" },
     });
     return NextResponse.json(admins);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to fetch hosts" }, { status: 500 });
   }
 }
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(newAdmin);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: "Failed to create host" }, { status: 500 });
   }
 }

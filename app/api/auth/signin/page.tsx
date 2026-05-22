@@ -29,7 +29,7 @@ export default function SignInPage() {
         router.push("/admin/requests");
         router.refresh();
       }
-    } catch (err) {
+    } catch (_err) {
       setError("An unexpected authentication error occurred.");
     } finally {
       setLoading(false);
