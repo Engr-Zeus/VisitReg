@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { AdminNav } from "@/components/AdminNav";
+// import { AdminNav } from "@/components/AdminNav";
 
 export default async function VisitorRequestsPage() {
   // Fetch all visitors, newest first

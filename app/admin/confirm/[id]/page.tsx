@@ -38,7 +38,7 @@ export default function HostConfirmationPage() {
       }
 
       setResult(status === "WAITING" ? `Wait ${waitTime}m` : status === "RESCHEDULED" ? `Rescheduled` : status);
-    } catch (err: any) {
+    } catch (err: unknown) {
       alert(`Error: ${err.message}`);
     } finally {
       setLoading(false);
@@ -121,7 +121,7 @@ export default function HostConfirmationPage() {
               </button>
               
               <button onClick={() => setView("wait")} className={`${btnBase} border border-amber-200 bg-amber-50 text-amber-700`}>
-                I'll be ready in...
+                I&apos;ll be ready in...
               </button>
 
               <button onClick={() => setView("reschedule")} className={`${btnBase} border border-slate-200 bg-slate-50 text-slate-600`}>
