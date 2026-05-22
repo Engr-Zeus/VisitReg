@@ -39,7 +39,8 @@ export default function HostConfirmationPage() {
 
       setResult(status === "WAITING" ? `Wait ${waitTime}m` : status === "RESCHEDULED" ? `Rescheduled` : status);
     } catch (err: unknown) {
-      alert(`Error: ${err.message}`);
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+      alert(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
